@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src='Math2.js'></script>
+	<style>
+		*{
+			margin:0;
+			padding:0;
+		}
+		#c1{
+			display:block;
+			border:1px solid red;
+			margin:100px auto;
+		}
+	</style>
+
+	<script>
+		window.onload = function(){
+			var cvs = document.querySelector('#c1');
+			var ctx = cvs.getContext('2d');
+			ctx.fillStyle = '#53888E';
+			ctx.fillRect(0,0,cvs.width,cvs.height);
+			var img = document.querySelector('img');
+			ctx.drawImage(img, 0, 0,img.width,img.height);
+			//输出图片的大小
+			var ww = img.width;
+			var hh = img.height;
+			//起始点x
+			var bx = 200;
+			var by = 200;
+			var offsetX = 0;
+			var offsetY = 0;
+			//背书
+			var bs = 4;
+			var rad = 2;
+			//将通过ctx的api获取整个图片的 数据
+			var imgData = ctx.getImageData(0, 0, img.width, img.height).data;
+			console.log(imgData);
+
+			var points = [];
+			// console.log(easeInOutBack(0,0,200,200))
+			var animateId;
+			getPoints();
+
+			// draw();
+
+			function getPoints(){
+				for(var i = 0 ; i < hh ; i++){
+					for(var j = 0 ; j < ww ; j++){
+						// 像素点在数组中的位置
+						var pIndex = (i*ww+j)*4;
+						if(imgData[pIndex]>2||(imgData[pIndex+1])>2||(imgData[pIndex+2])>2){
+							points.push({
+								x0:0,
+								y0:0,
+								x1:50+j,
+								y1:20+i,
+								e:0,
+								f: Math.floor(100/16.7)+1,
+								rgb:'rgb('+imgData[pIndex]+','+imgData[pIndex+1]+','+imgData[pIndex+2]+')',
+								delay: i/(Math.random()*10+1)
+								// delay: i/20
+								// delay: Math.random()>.5?i*.618:j*.618
+								// delay: Math.random()>.2?i*.618:j*.618
+							})
+						}
+					}
+				}
+			}
+			var an;
+			move();
+			function move(){
+				ctx.clearRect(0,0,cvs.width,cvs.height);
+				var flag = true;
+				for(var i = 0 ; i < points.length ; i++){
+					var rect = points[i];
+					ctx.beginPath();
+					ctx.fillStyle = rect.rgb;
+					//停止条件 增长时间>=结束时间+延迟执行时间
+					//执行中
+					if(rect.e<(rect.f+rect.delay)){
+						flag = false;
+						//延迟执行判断
+						if(rect.e>rect.delay){
+							var vx = Tween.Cubic.easeInOut(rect.e-rect.delay,rect.x0,rect.x1,rect.f);
+							var vy = Tween.Cubic.easeInOut(rect.e-rect.delay,rect.y0,rect.y1,rect.f);
+							ctx.arc(vx*bs,vy*bs, rad, 0, Math.PI*2, true);
+							// ctx.fillRect(vx*bs,vy*bs,rad,rad);
+							
+						}else{
+							//未执行 
+							// ctx.fillRect(rect.x0*bs,rect.y0*bs,rad,rad);
+							ctx.arc(rect.x0*bs,rect.y0*bs, rad, 0, Math.PI*2, true);
+						}
+					}else{
+						//执行完毕的 直接停留到目标位置
+						// ctx.fillRect((rect.x0+rect.x1)*bs,(rect.y0+rect.y1)*bs,rad,rad);
+						ctx.arc((rect.x0+rect.x1)*bs,(rect.y0+rect.y1)*bs, rad, 0, Math.PI*2, true);
+					}
+					ctx.fill();
+					ctx.closePath();
+					rect.e++;
+					
+				}
+				if(flag){
+					cancelAnimationFrame(an)
+					console.log('结束动画');
+					return;
+				}else{
+					an = requestAnimationFrame(move);
+				}
+			}
+
+		}
+	</script>
+	
+</head>
+<body>
+	<canvas id="c1" width="900px" height="500px"> 
+		
+	</canvas>
+	<img src="data:image/jpeg;base64,/9j/2wCEAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDIBCQkJDAsMGA0NGDIhHCEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMv/AABEIACgAKAMBIgACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5+gEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2gAMAwEAAhEDEQA/APdhVHWNWg0XTJr24PyxrkL3Y9gKvV5N8V9d+zala2byhYo4/MC55ZiT29gKmTsjohHmdjh/Ed/rXifWooV+e4uGwBziNf8AAVak8IeKvDE4vrQ/aBEBIJIX2sCOvHX8qb4S1n7LqgYtGWlUqC6M3zMRgfKOK9DvfEZj0qKa4iiVpiUQByFPHqRn9KhSZ0uCZqfD/wAcxeLNPKylVvYh+8UcbvfFdpur5t8HXUmmfECK5teILi6I2qcgqzY4/Ovfv7U/6Zv/AN8mrUkc04amgSACTXzp8W5PtnjJkRgXWNVJ/wA+5NfQl3bpd2ktu7OqupBZDhh7g9jXhPi7wJqumaq9xZiXUEnb5JXOXU/7RP8AOlIqna434TzWdvf6rYzlGmAXaH6lR1x+NbnivxbbWlpJbwwxXUvzrH5Misq5wOQDkYri9E8Oatba7aPcR+RJI7ASJgkYHft6fnW4PB2sanem68sASSbdifLv55wT071FnsdCkkrsT4bTSnxBaTXNg0i79okC52E8A17vuT+6fyrM8K6YdO0C1gmhjimVPnC4PP1rb2LWijZHLUkmyKopoElGHUHPHNTU1uq/WmIyptEtbmSJiNmxv4R1H+RVwQIs0MaKAFPAHbFTJ94U1f8Aj6T6H+dVYLskicD5R1H+FS7m/u/rVWH/AFtWqaJP/9k=" alt="" width=100 height=100 hidden>
+</body>
+</html>
