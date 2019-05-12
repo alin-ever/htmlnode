@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
@@ -75,8 +75,8 @@
             var width = document.documentElement.clientWidth;
             var height = document.documentElement.clientHeight;
             var cvs = document.querySelector('#cvs');
-            cvs.width = width;
-            cvs.height = height;
+            cvs.width = width * 2;
+            cvs.height = height * 2;
         }
     </script>
     <script>
@@ -109,7 +109,7 @@
         }
         btn4.ontouchstart = function () {
             for (var i = 0; i < balls.length; i++) {
-                balls[i].ball.r += 0.1;
+                balls[i].ball.r += 1;
             }
         }
         btn5.ontouchstart = function () {
@@ -125,7 +125,7 @@
             this.cvs = document.querySelector(id);
             this.ctx = this.cvs.getContext('2d');
             this.ball = {
-                r: this.myRandom(1, 2),
+                r: this.myRandom(4, 6),
                 color: `rgba(${this.myRandom(0,256)},${this.myRandom(0,256)},${this.myRandom(0,256)})`,
                 stepX: this.myRandom(-1,1),
                 stepY: this.myRandom(-1,1)
