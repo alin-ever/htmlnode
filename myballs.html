@@ -267,6 +267,7 @@
         //     }
         // }
         document.body.ontouchmove = function(e) {
+            e.isSCROLL = false;
             e.preventDefault();
         }
         cvs.ontouchstart = function (e) {
