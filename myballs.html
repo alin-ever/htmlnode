@@ -266,6 +266,9 @@
         //         mouse = null;
         //     }
         // }
+        document.body.ontouchmove = function(e) {
+            e.preventDefault();
+        }
         cvs.ontouchstart = function (e) {
             var touch = e.touches[0];
             touch = {
